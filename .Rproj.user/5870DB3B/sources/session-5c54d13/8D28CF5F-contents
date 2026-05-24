@@ -1,0 +1,18 @@
+# 1. まずフォルダをGit管理下に置く（これで怒られなくなります）
+git init
+
+# 【重要】このプロジェクト専用のユーザー情報を設定（身バレ防止）
+git config --local user.name "aknzw-ds"
+git config --local user.email "287349491+aknzw-ds@users.noreply.github.com"
+
+# Gitの初期設定と最初のコミット
+git init
+git add .
+git commit -m "initial commit"
+git branch -M main
+
+# GitHubへの紐付け（github.com を github-ds に書き換える）
+git remote add origin git@github-ds:ユーザー名/リポジトリ名.git
+
+# 公開！
+git push -u origin main
