@@ -1,0 +1,268 @@
+---
+title: "01_data_visualization"
+format: 
+  html:
+    embed-resources: true
+number-sections: true
+---
+
+```{r}
+#| echo: false
+```
+# 第一章
+
+## はじめに
+ggplot2の理論的な背景についてもっと学びたい場合、[A Layered Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.pdf)を参照してください。
+
+### 準備 
+```{r include=FALSE}
+library(tidyverse)
+```
+
+## 第一ステップ
+### mpgデータフレーム
+```{r}
+str(mpg)
+```
+### ggplotを作る
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+### グラフ作成テンプレート
+<code>
+ ggplot(data = ＜DATA＞) + <br>
+   ＜GEOM_FUNCTION＞(mapping = as(＜MAPPINGS＞))
+</code>
+
+## エステティックマッピング
+赤の点は線形傾向から外れています。これらの車は予想より燃費が優れています。
+```{r}
+p_mpg <- mpg %>% mutate(mapcol = ifelse(hwy>20 & displ>5, "red","black"))
+ggplot(p_mpg) +
+  geom_point(aes(x = displ, y = hwy, col = mapcol)) +
+  scale_color_identity()
+```
+
+- これらの車がハイブリッドだと仮説を立て、classの可視化を行います。
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+エステティック属性を変数に対応付けるには、aes()の中で<br>
+エステティック属性の名前を変数名に関連付けます。<br>
+ggplot2が自動的にaestheticのレベルが変数の値に１体１に対応するように代入します。
+
+外れ値は２シートなのでスポーツカーです。<br>
+エンジンは大きいがボディがコンパクトなので燃費が良い。<br>
+ハイブリッドの可能性は少ないでしょう。
+
+- classをサイズに対応させることもできます。
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, size = class))
+```
+順序のない変数を順序のあるエステティック属性(size)に対応させるのは<br>
+よくないので、警告が出されます。<br>
+Warning	<br>
+Warning: Using size for a discrete variable is not advised. <br>
+
+- 透過度を示すalpha
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+```
+
+- 点の形を対応させるshape
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+ggplot2は一度に６つの形しか使うことができないので<br>
+それ以上のグループ（SUV）のプロットがされません。
+
+- プロットの全ての点を青にする
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+エステティック属性を自分で設定するときは、aes()の中ではなく<br>
+geom関数の引数に名前で設定します。
+
+## よくある不具合
+- コンソールの先頭が「+」の時は入力待ち状態です
+- ggplot() と次の処理をつなぐ「+」は行末に書きます
+- コンソールで「?関数名」を実行するとヘルプが表示されます。
+- それでも解決しない場合はエラーメッセージでGoogle検索です。
+
+## ファセット
+単一変数でプロットのファセットを作るには、facet_wrap()を使います。<br>
+第一引数は変数（離散値）の前に~を付けたformula形式（Rのデータ構造の名称）
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~ class, nrow = 2)
+```
+
+２変数を組み合わせたプロットのファセットを作るには、facet_grid()を使います。
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ cyl)
+```
+
+行または列の次元だけでファセットを作るには、facet_grid(. ~ cyl)のように変数名の代わりに「.」を使います。
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+```
+
+## 幾何オブジェクト
+geomとは、プロットがデータを表すのに使う幾何オブジェクトのことです。
+```{r}
+#| out-width: "100%"
+#| layout-ncol: 2
+
+ggplot(data = mpg) +
+  ggtitle("geom_point") +
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+ggplot(data = mpg) +
+  ggtitle("geom_smooth") +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+- geom_smoothのエステティック属性は線種の設定が可能
+4:4輪駆動、f:前輪駆動、 r:後輪駆動
+```{r}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+
+- エステティック属性を離散変数にマップした時は常にgeomのデータを自動的にgroup処理をします。この自動処理に任せると便利です。
+```{r}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+```{r}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+```
+```{r}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, color = drv),
+              show.legend = FALSE)
+```
+
+- 複数のgeom関数を加えます
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth()
+```
+
+- geom関数はそのレイヤーでだけ、ggplotで作成されてマッピングを拡張または上書きします
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  geom_smooth(
+    data = filter(mpg, class == "subcompact"),
+    se = FALSE
+  )
+```
+
+## 統計変数
+
+- 棒グラフ、ヒストグラム、度数分布多角形では、区分分けして個数を表示する
+- データに合わせるようにスムーザがモデルを作り、モデルから予測してプロットする
+- 箱ひげ図は分布の頑健な要約であり、特別な形式の箱を表示する。
+- statはグラフの新たな値を計算するためのアルゴリズムです。（統計変換）
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut))
+```
+
+```{r}
+demo <- tribble (
+  ~a, ~b,
+  "bar_1", 20,
+  "bar_2", 30,
+  "bar_3", 40
+)
+
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = a, y = b), stat = "identity")
+```
+
+- 個数ではなく比率にマッピングをオーバーライト
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(aes(x = cut, y = after_stat(prop), group = 1))
+```
+
+- xの値ごとにyの値の要約を示す
+```{r}
+ggplot(data = diamonds) +
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  )
+```
+
+## 位置調整
+
+エステティック属性fillをカテゴリ変数にマップするとx軸のfillに設定されたgroupで分割されます。<br>
+デフォルトのposition引数"stack"により積み上げられます。
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(aes(x = cut, fill = clarity))
+```
+
+position引数"identity"は各オブジェクトがグラフのコンテキストの中で<br>
+しかるべき位置に置かれる。→　重なりが出来る。
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(aes(x = cut, fill = clarity), position = "identity")
+```
+
+重なりを見えるようにするには、透過を上げる（alpha）
+```{r}
+ggplot(data = diamonds,
+       mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = 1/5, position = "identity")
+```
+
+またはfill = NAで完全に透過にする
+```{r}
+ggplot(data = diamonds,
+       mapping = aes(x = cut, color = clarity)) +
+  geom_bar(fill = NA, position = "identity")
+```
+
+position引数"fill"は積み上げた棒の高さが同じになる。<br>
+グループ間の比較に向いている。
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(aes(x = cut, fill = clarity), position = "fill")
+```
+
+position引数"fill"は重なるオブジェクトを隣に置くので個別の値の比較に向いている。
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(aes(x = cut, fill = clarity), position = "dodge")
+```
+
+position引数"jitter"は各点の位置にランダムノイズを追加して<br>
+散布図で値が丸められたオーバープロットの位置調整をします。
+```{r}
+ggplot(data = mpg) +
+  geom_point(
+    mapping = aes(x = displ, y = hwy),
+    position = "jitter"
+  )
+```

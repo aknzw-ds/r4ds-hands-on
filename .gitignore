@@ -1,0 +1,17 @@
+# Rの環境ファイル（絶対に公開NG！）
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+.Rproj.user/
+memo
+data/
+
+# Quartoのキャッシュや一時出力フォルダ
+/.quarto/
+/*_cache/
+/*_files/
+
+# OSの一時ファイル
+.DS_Store
+Thumbs.db

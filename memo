@@ -1,15 +1,55 @@
+# 1. まずフォルダをGit管理下に置く（これで怒られなくなります）
+git init
+
 # 【重要】このプロジェクト専用のユーザー情報を設定（身バレ防止）
 git config --local user.name "aknzw-ds"
 git config --local user.email "287349491+aknzw-ds@users.noreply.github.com"
 
 # Gitの初期設定と最初のコミット
-git init
 git add .
 git commit -m "initial commit"
 git branch -M main
 
 # GitHubへの紐付け（github.com を github-ds に書き換える）
-git remote add origin git@github-ds:ユーザー名/リポジトリ名.git
+git remote add origin git@github-ds:aknzw-ds/r4ds-hands-on.git
 
 # 公開！
-git push -u origin main
+(未)git push -u origin main
+
+r4ds-hands-on/             # リポジトリのルート（RProject）
+│
+├── 📁 data/               # 本文でダウンロードした外部データやCSVなど
+├── 📁 notebook/           # 章ごとの学習・実験（R Markdown / Quarto）
+│   ├── 01_visualize.qmd
+│   ├── 02_workflow.qmd
+│   └── 19_functions.qmd
+│
+├── 📁 R/                  # 関数として共通化・再利用するスクリプト（.R）
+│   ├── utils.R
+│   └── custom_plots.R
+│
+├── 📁 exercises/          # 章末の練習問題の解答コード
+│   └── ex_01_visualize.R
+│
+├── 📁 docs/               # GitHub Pages公開用
+│   └── 01_visualize.html
+│
+├── .gitignore             # Git管理から除外するファイルの設定
+├── README.md              # このプロジェクトの概要・学習の記録
+└── r4ds-hands-on.Rproj    # RStudioのプロジェクトファイル
+
+git status
+git add .
+git commit -m "feat: 第1章データ可視化（閲覧用HTMLもdocsに追加）"
+git push origin main
+
+
+feat:（featuresの略）意味: 新しい機能や、新しい学習ノート、練習問題を追加したとき。
+　例: feat: 第2章ワークフローのベースファイルを追加
+
+fix:（bug fixesの略）意味: コードのバグや、テキストのタイポ（誤字）を修正したとき。
+　例: fix: 1.8章のporithonのタイポを修正
+
+docs:（documentationの略）意味: コードそのものは変えず、.gitignore を更新したり、
+README（説明文）を書き換えたりしたとき。
+　例: docs: 個人情報保護のために.gitignoreを更新
