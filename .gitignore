@@ -5,7 +5,8 @@
 .Renviron
 .Rproj.user/
 memo
-data/
+data/*
+!data/geom_stat.csv
 
 # Quartoのキャッシュや一時出力フォルダ
 /.quarto/
