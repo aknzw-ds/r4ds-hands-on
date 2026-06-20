@@ -266,3 +266,106 @@ ggplot(data = mpg) +
     position = "jitter"
   )
 ```
+
+## 座標系
+- coord_flip()はx軸とy軸の交換を行います。
+```{r}
+ggplot(data = mpg) +
+  geom_boxplot(
+    mapping = aes(x = class, y = hwy)
+  )
+
+ggplot(data = mpg) +
+  geom_boxplot(
+    mapping = aes(x = class, y = hwy)
+  ) +
+  coord_flip()
+```
+
+- coord_quickmap()は地図の縦横比を正しく設定する。地図データをggplot2でプロットする場合に重要
+```{r}
+# install.packages("maps")
+library(maps)
+
+nz <- map_data("nz")
+
+ggplot(nz, aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "black")
+
+ggplot(nz, aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "black") +
+  coord_quickmap()
+```
+
+- coord_polar()は極座標を使う。棒グラフを鶏頭図にする。
+```{r}
+bar <- ggplot(data = diamonds) +
+  geom_bar(
+    mapping = aes(x = cut, fill = cut),
+    show.legend = FALSE,
+    width = 1
+  ) +
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+bar + coord_polar()
+```
+
+
+## 階層グラフィックス文法
+表示の為のテンプレートですが実際はggplot2が有用なデフォルト値を設定しているので<br>
+全て指定することはほとんどありません。<br>
+
+ggplot(data = <DATA>) + <br>
+ <GEOM_FUNCTION>( <br>
+  mapping = aes(<MAPPINGS>), <br>
+  stat = <STAT>, <br>
+  position = <POSITION> <br>
+ ) + <br>
+ <COORDINATE_FUNCTION> + <br>
+ <FACET_FUNCTION> <br>
+
+### 基本プロットを何もないところから作ってみる
+- データセットから(statで)表示したい情報を変換
+
+1. diamondsで始める
+```{r}
+diamonds
+
+ggplot(data = diamonds)
+```
+
+2. stat_count()で各カット値の個数を計算
+```{r}
+diamonds %>% group_by(cut) %>% summarise(count = n())
+
+ggplot(data = diamonds) +
+  stat_count(aes(x = cut))
+```
+
+3. geomオブジェクトを選択。geomオブジェクトとstatのペアについては一覧参照
+```{r}
+ggplot(data = diamonds, aes(x = cut)) +
+  geom_bar()
+```
+
+4. 各棒のfillにafter_stat(count)をマップ
+```{r}
+ggplot(data = diamonds, aes(x = cut)) +
+  geom_bar(aes(fill = after_stat(count)), show.legend = FALSE)
+```
+
+5. geomを直交座標系に置いて位置調整。
+```{r}
+ggplot(data = diamonds, aes(x = cut)) +
+  geom_bar(aes(fill = clarity))
+```
+
+6. y値をafter_stat(count) x値をcutにマップ座標調整
+```{r}
+ggplot(data = diamonds, aes(x = cut)) +
+  geom_bar(aes(fill = clarity)) +
+  coord_flip()
+```
+

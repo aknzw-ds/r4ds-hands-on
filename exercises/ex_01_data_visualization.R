@@ -259,7 +259,7 @@ ggplot(data = diamonds) +
     mapping = aes(x = cut, fill = color, y = after_stat(prop))
   )
 
-# --- 1.7 統計変換 -------------------------
+# --- 1.8 位置調整 -------------------------
 # Q1. 散布図の問題は何か。どうすれば改善できるか。
 # A. 値が重なっているので、各座標に乱数を加え位置調整をすることで見えやすくなる。
 ggplot(data = mpg) +
@@ -287,3 +287,36 @@ ggplot(data = mpg) +
 # 　　"dodge2" は要素のデータ自体から自動で判断して横並びにしてくれます。
 ggplot(mpg, aes(class, hwy)) +
   geom_boxplot()
+
+# --- 1.9 座標系 -------------------------
+# Q1. 積み上げ棒グラフを円グラフに変換
+ggplot(data = diamonds) +
+  geom_bar(
+    mapping = aes(x = cut, fill = cut),
+    show.legend = FALSE,
+    width = 1
+  ) +
+  coord_polar()
+
+# Q2. labs()の作用
+# 既存のタイトルや軸のラベルなどを任意の名前で上書き出来る
+
+# Q3. coord_quickmap()とcoord_map()の違い
+# A. coord_map() は地球の球体を正確に平面に投影するため計算が重いです。
+#  一方、coord_quickmap() は直線を直線として素早く近似計算するため、
+#  圧倒的に軽くて速いという実務上の大きなメリットがあります。
+#  実務の地図プロットでは、まず quickmap を使うのが定石です。
+
+# Q4. 次のプロットから何が読み取れるか。coord_fixed()の重要性とgeom_abline()の作用
+# A. 対角線（geom_abline()）よりすべての点（プロット）が上側にあります。
+#   これは「どの車も、街乗り燃費（cty）より高速道路の燃費（hwy）の方が絶対に良い」
+#   という、データの持つ重要なビジネス的意味を綺麗に読み解けている証拠です。
+#   また、coord_fixed() があるおかげで「ctyの1目盛り」と「hwyの1目盛り」の
+#   物理的な長さが同じになり、視覚的な歪み（ウソ）がなくなっています。
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() +
+  geom_abline() +
+  coord_fixed()
+
+# --- 1.10 階層グラフィックス文法 -------------------------
+# テキストはまとめのみ
