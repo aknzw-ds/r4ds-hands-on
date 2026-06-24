@@ -1,0 +1,38 @@
+---
+title: "02_workflow_basics"
+format: 
+  html:
+    embed-resources: true
+number-sections: true
+number-offset: 1
+---
+
+```{r}
+#| echo: false
+```
+
+# ワークフロー：基本
+
+## コーディングの基本
+- 電卓として使うことができます
+```{r}
+1 / 200 * 30
+
+(59 + 73 + 2) / 3
+
+sin(pi / 2)
+```
+
+- 新たなオブジェクト(object_name <- value)<br>
+  `<-`を入力するにはRStudioショートカットの **`Alt` + `-`** (Macは **`Option` + `-`**)
+```{r}
+x <- 3 * 4
+```
+
+
+## 名前の中には何がある？
+- オブジェクト補完機能は入力途中でタブキー
+
+## 関数呼び出し
+- Rには膨大な組み込み関数があり、次のように呼び出します。
+function_name(arg1 = val1, arg2 = val2, ...)
